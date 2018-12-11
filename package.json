@@ -1,0 +1,42 @@
+{
+  "name": "read4me",
+  "version": "0.0.1",
+  "private": true,
+  "rnpm": {
+    "assets": [
+      "./assets/fonts/"
+    ]
+  },
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "dev": "react-native run-android && react-native log-android",
+    "build": "npm run bundle && npm run release",
+    "release": "cd android && ./gradlew assembleRelease",
+    "bundle": "react-native bundle --assets-dest ./android/app/src/main/res/ --entry-file ./index.js --bundle-output ./android/app/src/main/assets/index.android.bundle --platform android --dev false",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.2.0",
+    "native-base": "^2.8.1",
+    "react": "16.6.1",
+    "react-native": "^0.57.7",
+    "react-native-document-picker": "^2.2.0",
+    "react-native-fs": "^2.12.1",
+    "react-native-gesture-handler": "^1.0.10",
+    "react-native-onesignal": "^3.2.11",
+    "react-native-splash-screen": "^3.1.1",
+    "react-native-tts": "^2.0.0",
+    "react-navigation": "^3.0.7",
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.1"
+  },
+  "devDependencies": {
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.50.0",
+    "react-test-renderer": "16.6.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
