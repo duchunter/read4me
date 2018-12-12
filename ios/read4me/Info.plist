@@ -71,6 +71,10 @@
 		<string>Zocial.ttf</string>
 		<string>Avenir-Medium.ttf</string>
 		<string>Avenir.otf</string>
+		<string>AntDesign.ttf</string>
+		<string>FontAwesome5_Brands.ttf</string>
+		<string>FontAwesome5_Regular.ttf</string>
+		<string>FontAwesome5_Solid.ttf</string>
 	</array>
 </dict>
 </plist>

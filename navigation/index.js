@@ -7,7 +7,10 @@ const AppNavigator = createStackNavigator(
     App: AppScreen,
   },
   {
-    initialRouteName: 'App'
+    initialRouteName: 'App',
+    defaultNavigationOptions: {
+      header: null
+    }
   }
 );
 
