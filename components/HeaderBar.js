@@ -7,7 +7,7 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Icon, Text } from 'native-base';
 
 import font from 'read4me/config/font';
-import { DARK } from 'read4me/config/color';
+import { DARK_PRIMARY } from 'read4me/config/color';
 
 export default class HeaderBar extends React.Component {
   render() {
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   container: {
     height: 50,
     flexDirection: 'row',
-    backgroundColor: DARK
+    backgroundColor: DARK_PRIMARY
   },
 
   iconContainer: {

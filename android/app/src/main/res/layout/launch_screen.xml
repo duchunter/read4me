@@ -7,8 +7,8 @@
     android:background="@color/white"
     android:gravity="center">
     <ImageView
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="238dp"
+        android:layout_height="196dp"
         android:src="@mipmap/icon"
     />
 </LinearLayout>

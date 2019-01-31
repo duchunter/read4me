@@ -6,7 +6,7 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Icon, Text } from 'native-base';
 
 import font from 'read4me/config/font';
-import { DARK } from 'read4me/config/color';
+import { DARK_PRIMARY } from 'read4me/config/color';
 
 const PlayMode = [
   {
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     minHeight: 100,
     maxHeight: 100,
-    backgroundColor: DARK
+    backgroundColor: DARK_PRIMARY
   },
 
   button: {

@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from 'native-base';
 import Slider from 'react-native-slider';
 
-import { DARK } from 'read4me/config/color';
+import { DARK_PRIMARY } from 'read4me/config/color';
 import font from 'read4me/config/font';
 
 export default class SeekBar extends React.Component {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     maxHeight: 60,
     justifyContent: 'center',
     paddingHorizontal: 15,
-    backgroundColor: DARK
+    backgroundColor: DARK_PRIMARY
   },
 
   textContainer: {
