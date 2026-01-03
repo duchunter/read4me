@@ -1,0 +1,7 @@
+const color = {
+  "DARK_PRIMARY": "#040404",
+  "DARK_SECONDARY": "#222222",
+  "BLUE_PRIMARY": "#2C7DFA"
+}
+
+export default color;
