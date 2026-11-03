@@ -1,50 +1,39 @@
-# Welcome to your Expo app 👋
+# read4me
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An Android app that reads documents aloud. Pick a `.txt` or `.json` file and read4me speaks it segment by segment with text-to-speech, showing the current text, image, or code snippet on screen.
+
+Built with [Expo](https://expo.dev) and React Native.
+
+## Features
+
+- **Text mode** – plain `.txt` files are split into sentences.
+- **Medium post mode** – `.json` files with a `content` array of segments (`text`, `img`, or code `files`).
+- Play / pause, skip forward or back 5 segments, seek bar.
+- Playback speed (x0.5 – x1.5) and repeat / repeat-one / stop-at-end modes.
 
 ## Get started
+
+Requires Node, yarn, and the Android SDK with an emulator or device. The app uses native modules (TTS, file system, document picker), so it does not run in Expo Go.
 
 1. Install dependencies
 
    ```bash
-   npm install
+   yarn install
    ```
 
-2. Start the app
+2. Build and run on Android
 
    ```bash
-   npx expo start
+   yarn android
    ```
 
-In the output, you'll find options to open the app in a
+   This generates the native `android/` project with `expo prebuild` (it is not committed) and starts Metro.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Scripts
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Script          | What it does                                 |
+| --------------- | -------------------------------------------- |
+| `yarn android`  | Build and run the app on Android             |
+| `yarn start`    | Start the Metro dev server                   |
+| `yarn lint`     | Run ESLint                                   |
+| `yarn prebuild` | Regenerate native projects from `app.json`   |
