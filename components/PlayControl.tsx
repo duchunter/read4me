@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import color from "../config/color";
+import { TTS_LANGUAGE } from "../config/constants";
 
 const PlayMode = [
   {
@@ -23,23 +24,23 @@ const PlayMode = [
 const PlaySpeed = [
   {
     name: "x1",
-    val: 0.5,
+    val: 1,
   },
   {
     name: "x1.25",
-    val: 0.5 * 1.25,
+    val: 1.25,
   },
   {
     name: "x1.5",
-    val: 0.5 * 1.5,
+    val: 1.5,
   },
   {
     name: "x0.5",
-    val: 0.5 * 0.5,
+    val: 0.5,
   },
   {
     name: "x0.75",
-    val: 0.5 * 0.75,
+    val: 0.75,
   },
 ];
 
@@ -51,6 +52,8 @@ interface PlayControlProps {
   forward: () => void;
   backward: () => void;
   isPlaying: boolean;
+  language: number;
+  setLanguage: (language: number) => void;
 }
 
 const PlayControl: React.FC<PlayControlProps> = ({
@@ -60,6 +63,8 @@ const PlayControl: React.FC<PlayControlProps> = ({
   forward,
   backward,
   isPlaying,
+  language,
+  setLanguage,
 }) => {
   const [mode, setMode] = useState(0);
   const [speed, setSpeedIndex] = useState(0);
@@ -130,6 +135,16 @@ const PlayControl: React.FC<PlayControlProps> = ({
         }}
       >
         <Text style={styles.speedText}>{PlaySpeed[speed].name}</Text>
+      </TouchableOpacity>
+
+      {/* Language */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          setLanguage(language === TTS_LANGUAGE.length - 1 ? 0 : language + 1);
+        }}
+      >
+        <Text style={styles.speedText}>{TTS_LANGUAGE[language].label}</Text>
       </TouchableOpacity>
     </View>
   );

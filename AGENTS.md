@@ -4,12 +4,12 @@ Guidance for AI coding agents working in this repository.
 
 ## Project overview
 
-**read4me** is a small Expo / React Native app that reads documents aloud with text-to-speech. The user picks a `.txt` or `.json` file, the app splits it into segments, and `react-native-tts` speaks them one at a time while the screen shows the current segment (text, an image, or syntax-highlighted code).
+**read4me** is a small Expo / React Native app that reads documents aloud with text-to-speech. The user picks a `.txt` or `.json` file, the app splits it into segments, and `expo-speech` speaks them one at a time while the screen shows the current segment (text, an image, or syntax-highlighted code).
 
-- Expo SDK 54, React Native 0.81 (New Architecture on), React 19, TypeScript (strict)
+- Expo SDK 55, React Native 0.83 (New Architecture only; the legacy architecture no longer exists), React 19.2, TypeScript (strict)
 - Routing: `expo-router` (file-based, typed routes); React Compiler experiment on
 - UI: `native-base` plus plain `StyleSheet`; icons from `@expo/vector-icons`
-- Native modules: `react-native-tts`, `react-native-fs`, `@react-native-documents/picker`, `@react-native-community/slider`, `react-native-syntax-highlighter`
+- Native modules: `expo-speech`, `expo-file-system`, `@react-native-documents/picker`, `@react-native-community/slider`. Prefer Expo modules or libraries with New Architecture support; avoid old bridge-only modules
 - **Android-first**: the main screen uses `DrawerLayoutAndroid`, so iOS and web do not work as-is. Android package: `com.duchunter.read4me`.
 
 ## Commands
@@ -25,7 +25,7 @@ npx tsc --noEmit      # type-check
 yarn prebuild         # expo prebuild – regenerate native projects
 ```
 
-Expo Go cannot run this app because it relies on custom native modules (TTS, FS, document picker). Use a development build (`yarn android`).
+Expo Go cannot run this app because it relies on custom native modules (document picker, slider). Use a development build (`yarn android`).
 
 There is no test suite. Verify changes with `yarn lint` and `npx tsc --noEmit`, and by running the app on Android when behavior changes.
 
@@ -49,8 +49,8 @@ assets/images/       App icon, splash, adaptive icon layers
 ## How it works
 
 - **Segments.** A document becomes an array of `{ text?: string; img?: string; files?: { filename, language, content }[] }`. `app/index.tsx` prepends an empty segment, then steps through the array with `currentIndex`.
-- **Playback loop.** `speak()` speaks `data[currentIndex]`. The `tts-finish` listener increments `currentIndex`, and an effect calls `speak()` again while `isPlaying` is true. Image segments say "We have a picture" and code segments say "We have some code" before the matching view is shown.
-- **Controls.** `PlayControl` handles play/pause, skipping ±5 segments, speed (`Tts.setDefaultRate`) and play mode (0 = repeat, 1 = repeat one, 2 = stop at end). `SeekBar` jumps to a given index.
+- **Playback loop.** `speak()` speaks `data[currentIndex]` with `Speech.speak`. Its `onDone` callback increments `currentIndex`, and an effect calls `speak()` again while `isPlaying` is true. `Speech.stop()` does not fire `onDone`, so skipping and pausing stop the current segment without advancing. Image segments say "We have a picture" and code segments say "We have some code" before the matching view is shown.
+- **Controls.** `PlayControl` handles play/pause, skipping ±5 segments, speed (a rate multiplier kept in `rateRef`, 1 = normal, applied from the next segment) and play mode (0 = repeat, 1 = repeat one, 2 = stop at end). `SeekBar` jumps to a given index.
 - **Document modes** (`DOC_MODE` in `config/constants.ts`, chosen from the drawer):
   - `TEXT` → `transformTextFile`: joins lines, then splits on `". "` into sentences.
   - `MEDIUM_POST` → `transformMediumPost`: parses JSON and returns its `content` array, which must already hold segments in the shape above.

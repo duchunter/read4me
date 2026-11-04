@@ -9,8 +9,8 @@ import {
 } from "react-native";
 
 import { pick, types } from "@react-native-documents/picker";
-import RNFS from "react-native-fs";
-import Tts from "react-native-tts";
+import { File } from "expo-file-system";
+import * as Speech from "expo-speech";
 
 import CodeContent from "@/components/CodeContent";
 import DrawerContent from "@/components/DrawerContent";
@@ -21,8 +21,12 @@ import SeekBar from "@/components/SeekBar";
 import TextContent from "@/components/TextContent";
 
 import color from "@/config/color";
-import { WIDTH } from "@/config/constants";
+import { TTS_LANGUAGE, WIDTH } from "@/config/constants";
 import { transformMediumPost, transformTextFile } from "@/utils/transformer";
+
+// expo-speech on Android passes `language` to `new Locale(...)`, which only
+// understands a bare language code ("vi"), not a full tag ("vi-VN")
+const speechLanguage = (locale: string) => locale.split("-")[0];
 
 export default function Index() {
   const [data, setData] = useState<{ img?: any; files?: any; text: string }[]>([
@@ -35,14 +39,16 @@ export default function Index() {
   const [playingMode, setPlayingMode] = useState(0);
   const [docMode, setDocMode] = useState("TEXT");
   const [display, setDisplay] = useState("text");
+  const [language, setLanguage] = useState(0);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const drawerRef = useRef<DrawerLayoutAndroid>(null);
+  // Applies from the next segment, so changing it doesn't restart playback
+  const rateRef = useRef(1);
 
   const pickFile = async () => {
     try {
-      await Tts.getInitStatus();
       const result = await pick({
         type: [types.allFiles],
       });
@@ -57,9 +63,8 @@ export default function Index() {
       }
 
       setFile(res.name);
-      const buffer = await RNFS.readFile(res.uri, "utf8");
+      const buffer = await new File(res.uri).text();
 
-      Tts.setDefaultLanguage("en-US");
       let newData;
       switch (docMode) {
         case "TEXT":
@@ -76,6 +81,23 @@ export default function Index() {
     } catch (e: any) {
       Alert.alert("Error", e.message);
     }
+  };
+
+  const changeLanguage = async (newLanguage: number) => {
+    const { label, locale } = TTS_LANGUAGE[newLanguage];
+    const voices = await Speech.getAvailableVoicesAsync().catch(() => []);
+    const lang = speechLanguage(locale);
+    if (!voices.some((voice) => speechLanguage(voice.language) === lang)) {
+      Alert.alert(
+        "Voice not available",
+        `Install the ${label} (${locale}) voice in Android Settings > Text-to-speech output, then try again.`,
+      );
+      return;
+    }
+
+    // Stop the current segment; the playback effect re-speaks it in the new voice
+    Speech.stop();
+    setLanguage(newLanguage);
   };
 
   const speak = useCallback(() => {
@@ -98,31 +120,33 @@ export default function Index() {
     const next = data[currentIndex];
 
     if (next) {
+      const say = (text: string) =>
+        Speech.speak(text, {
+          language: speechLanguage(TTS_LANGUAGE[language].locale),
+          rate: rateRef.current,
+          onDone: () => setCurrentIndex((prevIndex) => prevIndex + 1),
+        });
+
       if (next.img) {
-        Tts.speak("We have a picture");
+        say(TTS_LANGUAGE[language].picturePrompt);
         setDisplay("img");
         return;
       }
 
       if (next.files) {
-        Tts.speak("We have some code");
+        say(TTS_LANGUAGE[language].codePrompt);
         setDisplay("code");
         return;
       }
 
       setDisplay("text");
-      Tts.speak(next.text || "");
+      say(next.text || "");
     }
-  }, [currentIndex, data, isPlaying, playingMode]);
+  }, [currentIndex, data, isPlaying, language, playingMode]);
 
   useEffect(() => {
-    Tts.addEventListener("tts-finish", () => {
-      setCurrentIndex((prevIndex) => prevIndex + 1);
-    });
-    Tts.setDefaultLanguage("en-US");
-
     return () => {
-      Tts.removeAllListeners("tts-finish");
+      Speech.stop();
     };
   }, []);
 
@@ -195,7 +219,7 @@ export default function Index() {
           max={data.length}
           value={currentIndex}
           pause={() => {
-            Tts.stop();
+            Speech.stop();
             setIsPlaying(false);
           }}
           setValue={(value) => {
@@ -207,7 +231,7 @@ export default function Index() {
         <PlayControl
           isPlaying={isPlaying}
           forward={() => {
-            Tts.stop();
+            Speech.stop();
             if (currentIndex >= data.length - 6) {
               setCurrentIndex(0);
             } else {
@@ -215,7 +239,7 @@ export default function Index() {
             }
           }}
           backward={() => {
-            Tts.stop();
+            Speech.stop();
             if (currentIndex <= 5) {
               setCurrentIndex(0);
             } else {
@@ -226,16 +250,18 @@ export default function Index() {
             setIsPlaying(true);
           }}
           pause={() => {
-            Tts.stop();
+            Speech.stop();
             if (currentIndex > 0) setCurrentIndex((prevIndex) => prevIndex - 1);
             setIsPlaying(false);
           }}
           setSpeed={(val) => {
-            Tts.setDefaultRate(val);
+            rateRef.current = val;
           }}
           setMode={(mode) => {
             setPlayingMode(mode);
           }}
+          language={language}
+          setLanguage={changeLanguage}
         />
       </View>
     </DrawerLayoutAndroid>
