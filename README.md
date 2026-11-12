@@ -7,7 +7,7 @@ Built with [Expo](https://expo.dev) and React Native.
 ## Features
 
 - **Text mode** – plain `.txt` files are split into sentences.
-- **Medium post mode** – `.json` files with a `content` array of segments (`text`, `img`, or code `files`).
+- **Medium post mode** – `.json` files with a `content` array of segments (`text`, `img`, or code `files`). See [docs/json-format.md](docs/json-format.md) for the format and how to convert documents to it.
 - Play / pause, skip forward or back 5 segments, seek bar.
 - Playback speed (x0.5 – x1.5) and repeat / repeat-one / stop-at-end modes.
 

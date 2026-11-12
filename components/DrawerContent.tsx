@@ -1,5 +1,6 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import color from "@/config/color";
 import { DOC_MODE } from "@/config/constants";
@@ -15,13 +16,22 @@ const DrawerContent: React.FC<DrawerContentProps> = ({
   close,
   changeMode,
 }) => {
+  const insets = useSafeAreaInsets();
+
   const parseTitle = (text: string): string => {
     let title = text.toLowerCase().split("_").join(" ");
     return title[0].toUpperCase() + title.slice(1);
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+      }}
+    >
       <Text style={styles.title}>Mode:</Text>
 
       {DOC_MODE.map((mode) => (

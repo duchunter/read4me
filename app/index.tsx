@@ -73,6 +73,10 @@ export default function Index() {
 
         case "MEDIUM_POST":
           newData = transformMediumPost(buffer);
+          break;
+
+        default:
+          throw new Error(`Unknown document mode: ${docMode}`);
       }
 
       newData.unshift({});

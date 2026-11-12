@@ -1,0 +1,27 @@
+{
+  "title": "read4me sample post",
+  "content": [
+    { "text": "Welcome to the read4me sample post." },
+    { "text": "This file shows the three kinds of segments the app understands." },
+    { "text": "First, a picture." },
+    { "img": "https://reactnative.dev/img/tiny_logo.png" },
+    { "text": "That was the React Native logo." },
+    { "text": "Next, some code." },
+    {
+      "files": [
+        {
+          "filename": "greet.ts",
+          "language": "typescript",
+          "content": "export function greet(name: string) {\n  return `Hello, ${name}!`;\n}"
+        },
+        {
+          "filename": "main.ts",
+          "language": "typescript",
+          "content": "import { greet } from \"./greet\";\n\nconsole.log(greet(\"read4me\"));"
+        }
+      ]
+    },
+    { "text": "The first file defines a greet function, and the second one calls it." },
+    { "text": "That is the end of the sample." }
+  ]
+}
