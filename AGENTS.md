@@ -9,7 +9,7 @@ Guidance for AI coding agents working in this repository.
 - Expo SDK 55, React Native 0.83 (New Architecture only; the legacy architecture no longer exists), React 19.2, TypeScript (strict)
 - Routing: `expo-router` (file-based, typed routes); React Compiler experiment on
 - UI: `native-base` plus plain `StyleSheet`; icons from `@expo/vector-icons`
-- Native modules: `expo-speech`, `expo-file-system`, `@react-native-documents/picker`, `@react-native-community/slider`. Prefer Expo modules or libraries with New Architecture support; avoid old bridge-only modules
+- Native modules: `expo-speech`, `expo-file-system`, `@react-native-documents/picker`, `@react-native-community/slider`, `react-native-gesture-handler` + `react-native-reanimated` (image zoom viewer; the root is wrapped in `GestureHandlerRootView`). Prefer Expo modules or libraries with New Architecture support; avoid old bridge-only modules
 - **Android-first**: the main screen uses `DrawerLayoutAndroid`, so iOS and web do not work as-is. Android package: `com.duchunter.read4me`.
 
 ## Commands
@@ -36,7 +36,7 @@ app/
   _layout.tsx        Root: NativeBaseProvider + headerless Stack
   index.tsx          The only screen: file picking, TTS playback state, drawer, rendering
 components/          Presentational components (HeaderBar, DrawerContent, PlayControl,
-                     SeekBar, TextContent, ImgContent, CodeContent)
+                     SeekBar, TextContent, ImgContent, ImageViewer, CodeContent)
 config/
   color.ts           Color palette (DARK_PRIMARY, DARK_SECONDARY, BLUE_PRIMARY)
   constants.ts       Screen size, IS_IOS, DOC_MODE list
@@ -51,7 +51,7 @@ docs/                User docs; json-format.md specifies the MEDIUM_POST JSON fo
 ## How it works
 
 - **Segments.** A document becomes an array of `{ text?: string; img?: string; files?: { filename, language, content }[] }`. `app/index.tsx` prepends an empty segment, then steps through the array with `currentIndex`.
-- **Playback loop.** `speak()` speaks `data[currentIndex]` with `Speech.speak`. Its `onDone` callback increments `currentIndex`, and an effect calls `speak()` again while `isPlaying` is true. `Speech.stop()` does not fire `onDone`, so skipping and pausing stop the current segment without advancing. Image segments say "We have a picture" and code segments say "We have some code" before the matching view is shown.
+- **Playback loop.** `speak()` speaks `data[currentIndex]` with `Speech.speak`. Its `onDone` callback increments `currentIndex`, and an effect calls `speak()` again while `isPlaying` is true. `Speech.stop()` does not fire `onDone`, so skipping and pausing stop the current segment without advancing. Image segments say "We have a picture" and code segments say "We have some code" while the matching view is shown, then playback pauses on that segment (`mediaPauseIndexRef` records it) so the user can look; pressing Play moves on to the next segment.
 - **Controls.** `PlayControl` handles play/pause, skipping ±5 segments, speed (a rate multiplier kept in `rateRef`, 1 = normal, applied from the next segment) and play mode (0 = repeat, 1 = repeat one, 2 = stop at end). `SeekBar` jumps to a given index.
 - **Document modes** (`DOC_MODE` in `config/constants.ts`, chosen from the drawer):
   - `TEXT` → `transformTextFile`: joins lines, then splits on `". "` into sentences.

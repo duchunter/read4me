@@ -1,6 +1,6 @@
 # JSON document format (Medium post mode)
 
-Besides plain `.txt` files, read4me can play a `.json` file that mixes text, images and code. Text is read aloud. For an image or a code block the app announces it ("We have a picture" / "We have some code") and shows it on screen.
+Besides plain `.txt` files, read4me can play a `.json` file that mixes text, images and code. Text is read aloud. For an image or a code block the app announces it ("We have a picture" / "We have some code"), shows it on screen and pauses. Press Play to continue. Tap an image to open it full screen, where you can pinch or double-tap to zoom.
 
 ## How to open one
 

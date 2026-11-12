@@ -46,6 +46,9 @@ export default function Index() {
   const drawerRef = useRef<DrawerLayoutAndroid>(null);
   // Applies from the next segment, so changing it doesn't restart playback
   const rateRef = useRef(1);
+  // Index of the picture/code segment playback stopped on, so Play moves past
+  // it instead of announcing it again
+  const mediaPauseIndexRef = useRef<number | null>(null);
 
   const pickFile = async () => {
     try {
@@ -80,6 +83,7 @@ export default function Index() {
       }
 
       newData.unshift({});
+      mediaPauseIndexRef.current = null;
       setData(newData);
       setCurrentIndex(0);
     } catch (e: any) {
@@ -124,27 +128,33 @@ export default function Index() {
     const next = data[currentIndex];
 
     if (next) {
-      const say = (text: string) =>
+      const say = (text: string, onDone: () => void) =>
         Speech.speak(text, {
           language: speechLanguage(TTS_LANGUAGE[language].locale),
           rate: rateRef.current,
-          onDone: () => setCurrentIndex((prevIndex) => prevIndex + 1),
+          onDone,
         });
+      const advance = () => setCurrentIndex((prevIndex) => prevIndex + 1);
+      // Stop on pictures and code so there is time to look at them
+      const pauseOnMedia = () => {
+        mediaPauseIndexRef.current = currentIndex;
+        setIsPlaying(false);
+      };
 
       if (next.img) {
-        say(TTS_LANGUAGE[language].picturePrompt);
+        say(TTS_LANGUAGE[language].picturePrompt, pauseOnMedia);
         setDisplay("img");
         return;
       }
 
       if (next.files) {
-        say(TTS_LANGUAGE[language].codePrompt);
+        say(TTS_LANGUAGE[language].codePrompt, pauseOnMedia);
         setDisplay("code");
         return;
       }
 
       setDisplay("text");
-      say(next.text || "");
+      say(next.text || "", advance);
     }
   }, [currentIndex, data, isPlaying, language, playingMode]);
 
@@ -227,6 +237,7 @@ export default function Index() {
             setIsPlaying(false);
           }}
           setValue={(value) => {
+            mediaPauseIndexRef.current = null;
             setCurrentIndex(Math.floor(value));
             setIsPlaying(true);
           }}
@@ -236,6 +247,7 @@ export default function Index() {
           isPlaying={isPlaying}
           forward={() => {
             Speech.stop();
+            mediaPauseIndexRef.current = null;
             if (currentIndex >= data.length - 6) {
               setCurrentIndex(0);
             } else {
@@ -244,6 +256,7 @@ export default function Index() {
           }}
           backward={() => {
             Speech.stop();
+            mediaPauseIndexRef.current = null;
             if (currentIndex <= 5) {
               setCurrentIndex(0);
             } else {
@@ -251,6 +264,10 @@ export default function Index() {
             }
           }}
           play={() => {
+            if (mediaPauseIndexRef.current === currentIndex) {
+              setCurrentIndex((prevIndex) => prevIndex + 1);
+            }
+            mediaPauseIndexRef.current = null;
             setIsPlaying(true);
           }}
           pause={() => {
